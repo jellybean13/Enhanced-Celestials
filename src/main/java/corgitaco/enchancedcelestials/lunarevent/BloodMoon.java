@@ -1,12 +1,12 @@
 package corgitaco.enchancedcelestials.lunarevent;
 
-import corgitaco.enchancedcelestials.config.EnhancedCelestialsConfig;
+import corgitaco.enchancedcelestials.EnhancedCelestials;
 import corgitaco.enchancedcelestials.util.EnhancedCelestialsUtils;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
-import net.minecraft.entity.EntityClassification;
+import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.entity.SpawnGroup;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.util.math.vector.Vector3f;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.text.TranslatableText;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.awt.*;
@@ -15,11 +15,8 @@ public class BloodMoon extends LunarEvent {
 
     public static final Color COLOR = new Color(166, 16, 30);
 
-    static double spawnCapMultiplier = EnhancedCelestialsConfig.spawnCapMultiplier.get();
-    static boolean redClouds = EnhancedCelestialsConfig.redClouds.get();
-
     public BloodMoon() {
-        super(LunarEventSystem.BLOOD_MOON_EVENT_ID, EnhancedCelestialsConfig.bloodMoonChance.get());
+        super(LunarEventSystem.BLOOD_MOON_EVENT_ID, EnhancedCelestials.CONFIG.bloodMoonSettings.bloodMoonChance);
     }
 
     @Override
@@ -30,9 +27,9 @@ public class BloodMoon extends LunarEvent {
     }
 
     @Override
-    public void multiplySpawnCap(EntityClassification mobCategory, int spawningChunkCount, Object2IntOpenHashMap<EntityClassification> currentMobCategoryCounts, CallbackInfoReturnable<Boolean> cir) {
-        if (mobCategory == EntityClassification.MONSTER) {
-            int spawnCap = (int) (mobCategory.getMaxNumberOfCreature() * (spawningChunkCount * spawnCapMultiplier) / EnhancedCelestialsUtils.CHUNK_AREA);
+    public void multiplySpawnCap(SpawnGroup mobCategory, int spawningChunkCount, Object2IntOpenHashMap<SpawnGroup> currentMobCategoryCounts, CallbackInfoReturnable<Boolean> cir) {
+        if (mobCategory == SpawnGroup.MONSTER) {
+            int spawnCap = (int) (mobCategory.getCapacity() * (spawningChunkCount * EnhancedCelestials.CONFIG.bloodMoonSettings.monsterSpawnCapMultiplier) / EnhancedCelestialsUtils.CHUNK_AREA);
             cir.setReturnValue(currentMobCategoryCounts.getInt(mobCategory) < spawnCap);
         }
     }
@@ -64,7 +61,7 @@ public class BloodMoon extends LunarEvent {
 
     @Override
     public Color modifyCloudColor(Color originalCloudColor) {
-        if (redClouds)
+        if (EnhancedCelestials.CONFIG.bloodMoonSettings.bloodMoonRedClouds)
             return COLOR;
         else
             return super.modifyCloudColor(originalCloudColor);
@@ -72,7 +69,7 @@ public class BloodMoon extends LunarEvent {
 
     @Override
     public boolean stopSleeping(PlayerEntity player) {
-        player.sendStatusMessage(new TranslationTextComponent("enhancedcelestials.sleep.fail.blood_moon"), true);
+        player.sendMessage(new TranslatableText("enhancedcelestials.sleep.fail.blood_moon"), true);
         return true;
     }
 }

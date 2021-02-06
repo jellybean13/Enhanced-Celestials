@@ -1,11 +1,8 @@
 package corgitaco.enchancedcelestials.data.network.packet;
 
 import corgitaco.enchancedcelestials.EnhancedCelestials;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.PacketBuffer;
-import net.minecraftforge.fml.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.minecraft.network.PacketByteBuf;
+import net.minecraft.world.World;
 
 public class LunarEventPacket {
     private final String event;
@@ -14,23 +11,15 @@ public class LunarEventPacket {
         this.event = event;
     }
 
-    public static void writeToPacket(LunarEventPacket packet, PacketBuffer buf) {
+    public static void writeToPacket(LunarEventPacket packet, PacketByteBuf buf) {
         buf.writeString(packet.event);
     }
 
-    public static LunarEventPacket readFromPacket(PacketBuffer buf) {
+    public static LunarEventPacket readFromPacket(PacketByteBuf buf) {
         return new LunarEventPacket(buf.readString());
     }
 
-    public static void handle(LunarEventPacket message, Supplier<NetworkEvent.Context> ctx) {
-        if (ctx.get().getDirection().getReceptionSide().isClient()) {
-            ctx.get().enqueueWork(() -> {
-                Minecraft minecraft = Minecraft.getInstance();
-                if (minecraft.world != null && minecraft.player != null) {
-                    EnhancedCelestials.getLunarData(minecraft.world).setEvent(message.event);
-                }
-            });
-        }
-        ctx.get().setPacketHandled(true);
+    public static void handle(LunarEventPacket message, World world) {
+        EnhancedCelestials.getLunarData(world).setEvent(message.event);
     }
 }

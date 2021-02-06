@@ -1,12 +1,12 @@
 package corgitaco.enchancedcelestials.mixin;
 
-import com.mojang.blaze3d.matrix.MatrixStack;
 import com.mojang.blaze3d.systems.RenderSystem;
 import corgitaco.enchancedcelestials.EnhancedCelestials;
 import corgitaco.enchancedcelestials.util.EnhancedCelestialsClientUtils;
-import net.minecraft.client.renderer.WorldRenderer;
+import net.minecraft.client.render.WorldRenderer;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.client.world.ClientWorld;
-import net.minecraft.util.math.vector.Vector3f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -20,10 +20,10 @@ public abstract class MixinWorldRender {
 
     @Shadow private ClientWorld world;
 
-    @Inject(method = "renderSky(Lcom/mojang/blaze3d/matrix/MatrixStack;F)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getMoonPhase()I"))
+    @Inject(method = "renderSky(Lnet/minecraft/client/util/math/MatrixStack;F)V", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/world/ClientWorld;getMoonPhase()I"))
     private void changeMoonColor(MatrixStack matrixStackIn, float partialTicks, CallbackInfo ci) {
         Color color = EnhancedCelestials.currentLunarEvent.modifyMoonColor();
         Vector3f glColor = EnhancedCelestialsClientUtils.transformToVectorColor(color);
-        RenderSystem.color4f(glColor.getX(), glColor.getY(), glColor.getZ(), 1.0F - this.world.getRainStrength(partialTicks));
+        RenderSystem.color4f(glColor.getX(), glColor.getY(), glColor.getZ(), 1.0F - this.world.getRainGradient(partialTicks));
     }
 }

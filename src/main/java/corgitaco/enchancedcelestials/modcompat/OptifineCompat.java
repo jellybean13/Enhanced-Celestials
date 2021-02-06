@@ -1,6 +1,6 @@
 package corgitaco.enchancedcelestials.modcompat;
 
-import net.minecraft.util.LazyValue;
+import net.minecraft.util.Lazy;
 
 public class OptifineCompat {
 
@@ -9,7 +9,7 @@ public class OptifineCompat {
      * Tracks whether or not Optifine is installed.
      * Allows for better compatibility with Optifine.
      */
-    public static final LazyValue<Boolean> IS_OPTIFINE_PRESENT = new LazyValue<>(() -> {
+    public static final Lazy<Boolean> IS_OPTIFINE_PRESENT = new Lazy<>(() -> {
 
         try {
 

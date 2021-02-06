@@ -2,14 +2,14 @@ package corgitaco.enchancedcelestials.data.world;
 
 import corgitaco.enchancedcelestials.EnhancedCelestials;
 import corgitaco.enchancedcelestials.lunarevent.LunarEventSystem;
-import net.minecraft.nbt.CompoundNBT;
-import net.minecraft.world.IWorld;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.world.ServerWorld;
+import net.minecraft.world.PersistentState;
+import net.minecraft.world.PersistentStateManager;
 import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
-import net.minecraft.world.storage.DimensionSavedDataManager;
-import net.minecraft.world.storage.WorldSavedData;
+import net.minecraft.world.WorldAccess;
 
-public class LunarData extends WorldSavedData {
+public class LunarData extends PersistentState {
     public static String DATA_NAME = EnhancedCelestials.MOD_ID + ":lunar_data";
 
     private String event = LunarEventSystem.DEFAULT_EVENT_ID;
@@ -23,12 +23,12 @@ public class LunarData extends WorldSavedData {
     }
 
     @Override
-    public void read(CompoundNBT nbt) {
+    public void fromTag(CompoundTag nbt) {
         setEvent(nbt.getString("event"));
     }
 
     @Override
-    public CompoundNBT write(CompoundNBT compound) {
+    public CompoundTag toTag(CompoundTag compound) {
         compound.putString("event", event);
         return compound;
     }
@@ -45,11 +45,11 @@ public class LunarData extends WorldSavedData {
     }
 
 
-    public static LunarData get(IWorld world) {
+    public static LunarData get(WorldAccess world) {
         if (!(world instanceof ServerWorld))
             return new LunarData();
-        ServerWorld overWorld = ((ServerWorld) world).getWorld().getServer().getWorld(World.OVERWORLD);
-        DimensionSavedDataManager data = overWorld.getSavedData();
+        ServerWorld overWorld = ((ServerWorld) world).toServerWorld().getServer().getWorld(World.OVERWORLD);
+        PersistentStateManager data = overWorld.getPersistentStateManager();
         LunarData weatherData = data.getOrCreate(LunarData::new, DATA_NAME);
 
         if (weatherData == null) {

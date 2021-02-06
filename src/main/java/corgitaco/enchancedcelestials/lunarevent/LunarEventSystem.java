@@ -6,9 +6,8 @@ import corgitaco.enchancedcelestials.data.network.NetworkHandler;
 import corgitaco.enchancedcelestials.data.network.packet.LunarEventPacket;
 import corgitaco.enchancedcelestials.util.EnhancedCelestialsUtils;
 import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
-import net.minecraft.world.server.ServerWorld;
-
 import java.util.HashMap;
+import net.minecraft.server.world.ServerWorld;
 
 public class LunarEventSystem {
 
@@ -42,7 +41,7 @@ public class LunarEventSystem {
     private static LunarEvent cachedLunarEvent = DEFAULT_EVENT;
 
     public static void updateLunarEventPacket(ServerWorld world) {
-        long dayTime = EnhancedCelestialsUtils.modulosDaytime(world.getWorldInfo().getDayTime());
+        long dayTime = EnhancedCelestialsUtils.modulosDaytime(world.getLevelProperties().getTimeOfDay());
         if (dayTime >= 13000 && dayTime <= 23500) {
             LunarEvent currentLunarEvent = LUNAR_EVENTS_MAP.get(EnhancedCelestials.getLunarData(world).getEvent());
             if (!cachedLunarEvent.equals(currentLunarEvent)) {

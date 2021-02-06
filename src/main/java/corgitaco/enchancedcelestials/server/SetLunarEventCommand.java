@@ -10,30 +10,28 @@ import corgitaco.enchancedcelestials.lunarevent.LunarEvent;
 import corgitaco.enchancedcelestials.lunarevent.LunarEventSystem;
 import corgitaco.enchancedcelestials.util.EnhancedCelestialsUtils;
 import net.minecraft.command.CommandSource;
-import net.minecraft.command.Commands;
-import net.minecraft.command.ISuggestionProvider;
-import net.minecraft.util.text.TranslationTextComponent;
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.text.TranslatableText;
 import net.minecraft.world.World;
-import net.minecraft.world.server.ServerWorld;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class SetLunarEventCommand {
 
-    public static ArgumentBuilder<CommandSource, ?> register(CommandDispatcher<CommandSource> dispatcher) {
+    public static ArgumentBuilder<ServerCommandSource, ?> register(CommandDispatcher<ServerCommandSource> dispatcher) {
         List<String> weatherTypes = LunarEventSystem.LUNAR_EVENTS.stream().map(LunarEvent::getID).collect(Collectors.toList());
 
-        return Commands.literal("setlunarevent").then(Commands.argument("lunarevent", StringArgumentType.string()).suggests((ctx, sb) -> ISuggestionProvider.suggest(weatherTypes.stream(), sb))
+        return CommandManager.literal("setlunarevent").then(CommandManager.argument("lunarevent", StringArgumentType.string()).suggests((ctx, sb) -> CommandSource.suggestMatching(weatherTypes.stream(), sb))
                 .executes((cs) -> betterWeatherSetWeatherType(cs.getSource(), cs.getArgument("lunarevent", String.class))));
     }
 
-    public static int betterWeatherSetWeatherType(CommandSource source, String lunarType) {
+    public static int betterWeatherSetWeatherType(ServerCommandSource source, String lunarType) {
         LunarEvent weatherEvent = LunarEventSystem.LUNAR_EVENTS_MAP.get(lunarType);
         if (weatherEvent != null) {
-            long dayTime = EnhancedCelestialsUtils.modulosDaytime(source.getWorld().getWorld().getWorldInfo().getDayTime());
+            long dayTime = EnhancedCelestialsUtils.modulosDaytime(source.getWorld().toServerWorld().getLevelProperties().getTimeOfDay());
             if (!(dayTime >= 13000 && dayTime <= 23500)) {
-                source.sendFeedback(new TranslationTextComponent("enhancedcelestials.commands.failed.requiresnight", dayTime), true);
+                source.sendFeedback(new TranslatableText("enhancedcelestials.commands.failed.requiresnight", dayTime), true);
                 return 0;
             }
 
@@ -43,7 +41,7 @@ public class SetLunarEventCommand {
                 NetworkHandler.sendToClient(player, new LunarEventPacket(lunarType));
             });
         } else {
-            source.sendFeedback(new TranslationTextComponent("enhancedcelestials.commands.failed", lunarType), true);
+            source.sendFeedback(new TranslatableText("enhancedcelestials.commands.failed", lunarType), true);
             return 0;
         }
         return 1;

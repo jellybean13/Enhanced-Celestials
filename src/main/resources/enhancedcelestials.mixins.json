@@ -5,11 +5,13 @@
   "refmap": "enhancedcelestials.refmap.json",
   "mixins": [
     "EntityDensityDensityManagerMixin",
-    "MixinBlock",
     "MixinAbstractBlockState",
     "MixinBedBlock",
+    "MixinBlock",
     "MixinEntityWorldSpawner",
-    "MixinMinecraftServer"
+    "MixinMinecraftServer",
+    "MixinPlayerManager",
+    "MixinServerWorld"
   ],
   "client": [
     "MixinLightMapTexture",
