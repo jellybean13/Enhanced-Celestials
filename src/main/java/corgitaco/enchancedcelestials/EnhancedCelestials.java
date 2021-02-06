@@ -51,9 +51,6 @@ public class EnhancedCelestials implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        if (!CONFIG_PATH.toFile().exists())
-            CONFIG_PATH.toFile().mkdirs();
-
         AutoConfig.register(ECConfig.class, JanksonConfigSerializer::new);
         CONFIG = AutoConfig.getConfigHolder(ECConfig.class).getConfig();
 
