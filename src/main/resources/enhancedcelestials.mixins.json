@@ -2,7 +2,6 @@
   "required": true,
   "package": "corgitaco.enchancedcelestials.mixin",
   "compatibilityLevel": "JAVA_8",
-  "refmap": "enhancedcelestials.refmap.json",
   "mixins": [
     "EntityDensityDensityManagerMixin",
     "MixinAbstractBlockState",
